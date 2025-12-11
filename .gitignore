@@ -1,0 +1,16 @@
+# Node
+node_modules
+node_modules/*
+cli/*
+dist
+.env
+.DS_Store
+
+# Astro
+.astro/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
