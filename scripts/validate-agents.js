@@ -63,11 +63,13 @@ function validateFrontmatter(content, filePath) {
     });
 
     // 1. Check mandatory keys
-    if (!Object.prototype.hasOwnProperty.call(frontmatter, 'description')) {
-        error(filePath, 'Missing required key "description"');
-    }
     if (!Object.prototype.hasOwnProperty.call(frontmatter, 'trigger')) {
         error(filePath, 'Missing required key "trigger"');
+    }
+
+    // Description is mandatory only if trigger is 'model_decision'
+    if (frontmatter.trigger === 'model_decision' && !Object.prototype.hasOwnProperty.call(frontmatter, 'description')) {
+        error(filePath, 'Missing required key "description" (required when trigger is "model_decision")');
     }
 
     // 2. Check description length
