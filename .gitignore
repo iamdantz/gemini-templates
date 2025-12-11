@@ -1,8 +1,4 @@
 # Node
-node_modules
-node_modules/*
-cli/*
-dist
 .env
 .DS_Store
 
