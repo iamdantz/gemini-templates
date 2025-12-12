@@ -101,7 +101,7 @@ trigger: always_on
 
     console.log(chalk.bold('\nNext Steps:'));
     console.log(`1. Open ${chalk.cyan(path.relative(cwd, agentsFile))} and add your project-specific instructions.`);
-    console.log('   This file acts as a global context (trigger: always_on), so Gemini will understand your project\'s rules and style in every interaction.');
+    console.log('   This file acts as a global context, so Gemini will understand your project\'s rules and style in every interaction.');
   } else {
     console.log(
       chalk.blue(
