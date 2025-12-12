@@ -19,7 +19,6 @@ describe('CLI Integration Tests', () => {
   });
 
   beforeEach(() => {
-    // Clean up inside test dir
     fs.rmSync(path.join(TEST_DIR, '.gemini'), { recursive: true, force: true });
     fs.rmSync(path.join(TEST_DIR, '.agent'), { recursive: true, force: true });
   });
@@ -35,21 +34,17 @@ describe('CLI Integration Tests', () => {
   });
 
   it('should auto-initialize and add a plugin with "add"', async () => {
-    // Ensure clean state
     expect(fs.existsSync(path.join(TEST_DIR, '.gemini/settings.json'))).toBe(false);
 
     const { stdout } = await execa('npx', ['ts-node', CLI_PATH, 'add', 'terraform', '--yes'], {
       cwd: TEST_DIR,
     });
 
-    // Check for auto-init message
     expect(stdout).toContain('Project not initialized. Running init first...');
-    
-    // Check for plugin download
+
     expect(stdout).toContain('Downloaded .agent/rules/terraform/terraform-specialist.md');
 
-    // Verify files
     expect(fs.existsSync(path.join(TEST_DIR, '.gemini/settings.json'))).toBe(true);
     expect(fs.existsSync(path.join(TEST_DIR, '.agent/rules/terraform/terraform-specialist.md'))).toBe(true);
-  }, 30000); // Increase timeout for network request
+  }, 30000);
 });
