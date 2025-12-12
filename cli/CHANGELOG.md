@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/iamdantz/gemini-templates/compare/v1.0.0...v1.0.1) (2025-12-12)
+
+
+### Bug Fixes
+
+* move runtime deps to dependencies ([f89f9ff](https://github.com/iamdantz/gemini-templates/commit/f89f9ff47b93cfaa2705c1a3fe700b8e3b7bc1ba))
+
 # 1.0.0 (2025-12-11)
 
 
