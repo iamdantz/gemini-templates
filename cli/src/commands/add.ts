@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
-import fetch from 'node-fetch';
 import prompts from 'prompts';
 import { init } from './init';
 
