@@ -1,6 +1,6 @@
 {
   "name": "gemini-templates",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "CLI tool for installing Gemini templates",
   "files": [
     "dist",

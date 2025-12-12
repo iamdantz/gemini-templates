@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/iamdantz/gemini-templates/compare/v1.0.1...v1.1.0) (2025-12-12)
+
+
+### Features
+
+* add plugin command ([695d0a9](https://github.com/iamdantz/gemini-templates/commit/695d0a934211ee8cf0e3ba58f945f8c06565702a))
+
 ## [1.0.1](https://github.com/iamdantz/gemini-templates/compare/v1.0.0...v1.0.1) (2025-12-12)
 
 
