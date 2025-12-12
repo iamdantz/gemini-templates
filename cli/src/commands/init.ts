@@ -6,7 +6,6 @@ import prompts from "prompts";
 export async function init(options: { yes?: boolean }) {
   const cwd = process.cwd();
 
-  // --- Step 1: .gemini/settings.json ---
   const geminiDir = path.join(cwd, ".gemini");
   const settingsPath = path.join(geminiDir, "settings.json");
 
@@ -84,7 +83,6 @@ export async function init(options: { yes?: boolean }) {
     console.log(chalk.blue(".gemini/settings.json is already up to date."));
   }
 
-  // --- Step 2: .agent/rules/AGENTS.md ---
   const agentRulesDir = path.join(cwd, ".agent", "rules");
   const agentsFile = path.join(agentRulesDir, "AGENTS.md");
 
