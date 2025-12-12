@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/iamdantz/gemini-templates/compare/v1.1.0...v1.2.0) (2025-12-12)
+
+
+### Features
+
+* **cli:** add integration tests and CI workflow ([75ff197](https://github.com/iamdantz/gemini-templates/commit/75ff197cfbf2904b6f05248467fe217819e0f3a8))
+
 # [1.1.0](https://github.com/iamdantz/gemini-templates/compare/v1.0.1...v1.1.0) (2025-12-12)
 
 
