@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'plugins/**'
-      - 'scripts/validate-agents.js'
+      - "plugins/**"
+      - "scripts/validate-agents.js"
 
 jobs:
   validate-agents:
@@ -17,7 +17,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "22"
 
-      - name: Run Agent Validation
-        run: node scripts/validate-agents.js
+      - name: Install dependencies
+        working-directory: cli
+        run: npm ci
+
+      - name: Build CLI
+        working-directory: cli
+        run: npm run build
+
+      - name: Validate Plugins
+        working-directory: cli
+        run: node dist/index.js validate --path ../plugins
