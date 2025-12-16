@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/iamdantz/gemini-templates/compare/v1.2.0...v1.3.0) (2025-12-16)
+
+
+### Features
+
+* **cli:** add agent validators ([0c7068d](https://github.com/iamdantz/gemini-templates/commit/0c7068dd8fd381ea91bd28e855cf10d6f100d670))
+
 # [1.2.0](https://github.com/iamdantz/gemini-templates/compare/v1.1.0...v1.2.0) (2025-12-12)
 
 
