@@ -3,13 +3,8 @@ import path from "path";
 import chalk from "chalk";
 import prompts from "prompts";
 import { init } from "./init";
-import { PLUGINS_DIR } from "../config";
-
-const MANIFEST_URL =
-  process.env.GEMINI_MANIFEST_URL ||
-  "https://raw.githubusercontent.com/iamdantz/gemini-templates/refs/heads/main/plugins/manifest.json";
-const BASE_CONTENT_URL =
-  "https://raw.githubusercontent.com/iamdantz/gemini-templates/refs/heads/main/plugins";
+import { PLUGINS_DIR, MANIFEST_URL, BASE_CONTENT_URL } from "@config";
+import { Manifest } from "@domain";
 
 interface AddOptions {
   yes?: boolean;
@@ -19,16 +14,6 @@ interface AddOptions {
   rules?: boolean;
   commands?: boolean;
   extensions?: boolean;
-}
-
-interface Manifest {
-  plugins: {
-    [key: string]: {
-      rules: { file: string; hash: string }[];
-      commands: { file: string; hash: string }[];
-      extensions: { file: string; hash: string }[];
-    };
-  };
 }
 
 export async function add(plugins: string[], options: AddOptions) {

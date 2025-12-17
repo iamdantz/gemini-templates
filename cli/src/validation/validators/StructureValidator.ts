@@ -1,8 +1,4 @@
-import {
-  IValidator,
-  ValidationContext,
-  ValidationResult,
-} from "../interfaces/IValidator";
+import { IValidator, ValidationContext, ValidationResult } from "@domain";
 import * as yaml from "js-yaml";
 
 const ALLOWED_TAGS = [
@@ -112,7 +108,7 @@ export class StructureValidator implements IValidator {
       const tagName = match[1];
       if (!ALLOWED_TAGS.includes(tagName)) {
         if (
-          !result.errors.some((e) =>
+          !result.errors.some((e: string) =>
             e.includes(`Invalid XML tag found: <${tagName}>`)
           )
         ) {

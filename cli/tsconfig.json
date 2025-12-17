@@ -8,7 +8,25 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@config": [
+        "src/config"
+      ],
+      "@domain": [
+        "src/domain/index"
+      ],
+      "@domain/*": [
+        "src/domain/*"
+      ],
+      "@commands/*": [
+        "src/commands/*"
+      ],
+      "@validation/*": [
+        "src/validation/*"
+      ]
+    }
   },
   "include": [
     "src/**/*",
