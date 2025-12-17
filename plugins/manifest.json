@@ -2,7 +2,10 @@
   "plugins": {
     "terraform": {
       "rules": [
-        "terraform-specialist.md"
+        {
+          "file": "terraform-specialist.md",
+          "hash": "a002134d5302c2ada1606ed735afe6bfeececde91656da36d4a6377edb193c14"
+        }
       ],
       "commands": [],
       "extensions": []

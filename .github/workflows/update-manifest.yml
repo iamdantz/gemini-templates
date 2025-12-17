@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'plugins/**'
-      - 'scripts/generate-manifest.js'
+      - "plugins/**"
+      - "scripts/generate-manifest.js"
 
 jobs:
   update-manifest:
@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Generate Manifest
         run: node scripts/generate-manifest.js
@@ -31,4 +31,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: update plugins manifest [skip ci]"
-          file_pattern: 'plugins/manifest.json'
+          file_pattern: "plugins/manifest.json"

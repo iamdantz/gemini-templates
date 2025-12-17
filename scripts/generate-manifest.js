@@ -1,12 +1,25 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const pluginsDir = path.join(__dirname, '../plugins');
 const manifestPath = path.join(pluginsDir, 'manifest.json');
 
+const getFileHash = (filePath) => {
+    const fileBuffer = fs.readFileSync(filePath);
+    const hashSum = crypto.createHash('sha256');
+    hashSum.update(fileBuffer);
+    return hashSum.digest('hex');
+};
+
 const getFiles = (dir) => {
     if (!fs.existsSync(dir)) return [];
-    return fs.readdirSync(dir).filter(file => file.endsWith('.md'));
+    return fs.readdirSync(dir)
+        .filter(file => file.endsWith('.md'))
+        .map(file => ({
+            file,
+            hash: getFileHash(path.join(dir, file))
+        }));
 };
 
 const generateManifest = () => {

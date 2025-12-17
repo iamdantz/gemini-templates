@@ -1,8 +1,6 @@
 export interface ValidationContext {
   content: string;
   filePath: string;
-  // We can add more context here later, e.g. "parsedFrontmatter" to share between validators
-  // but for now let's keep it decoupled.
 }
 
 export interface ValidationResult {
