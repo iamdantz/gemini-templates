@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/iamdantz/gemini-templates/compare/v1.3.0...v1.4.0) (2025-12-17)
+
+
+### Features
+
+* Implement file integrity checks using SHA256 hashes for downloaded and validated plugin files, updating manifest structure and generation. ([4a18c28](https://github.com/iamdantz/gemini-templates/commit/4a18c28e64f3b3a00676f7df69c5e8addda6e1d4))
+
 # [1.3.0](https://github.com/iamdantz/gemini-templates/compare/v1.2.0...v1.3.0) (2025-12-16)
 
 
