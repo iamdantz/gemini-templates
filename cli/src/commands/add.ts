@@ -6,6 +6,7 @@ import { init } from "./init";
 import { PLUGINS_DIR } from "../config";
 
 const MANIFEST_URL =
+  process.env.GEMINI_MANIFEST_URL ||
   "https://raw.githubusercontent.com/iamdantz/gemini-templates/refs/heads/main/plugins/manifest.json";
 const BASE_CONTENT_URL =
   "https://raw.githubusercontent.com/iamdantz/gemini-templates/refs/heads/main/plugins";
@@ -23,9 +24,9 @@ interface AddOptions {
 interface Manifest {
   plugins: {
     [key: string]: {
-      rules: string[];
-      commands: string[];
-      extensions: string[];
+      rules: { file: string; hash: string }[];
+      commands: { file: string; hash: string }[];
+      extensions: { file: string; hash: string }[];
     };
   };
 }
@@ -126,9 +127,12 @@ export async function add(plugins: string[], options: AddOptions) {
         fs.mkdirSync(targetDir, { recursive: true });
       }
 
-      for (const file of files) {
-        const fileUrl = `${BASE_CONTENT_URL}/${pluginName}/${type}/${file}`;
-        const destPath = path.join(targetDir, file);
+      for (const fileObj of files) {
+        const fileName = fileObj.file;
+        const expectedHash = fileObj.hash;
+
+        const fileUrl = `${BASE_CONTENT_URL}/${pluginName}/${type}/${fileName}`;
+        const destPath = path.join(targetDir, fileName);
         const relativeDest = path.relative(cwd, destPath);
 
         if (fs.existsSync(destPath) && !options.force) {
@@ -150,13 +154,28 @@ export async function add(plugins: string[], options: AddOptions) {
           try {
             const res = await fetch(fileUrl);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const content = await res.text();
-            fs.writeFileSync(destPath, content);
+
+            const arrayBuffer = await res.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+
+            const crypto = require("crypto");
+            const hashSum = crypto.createHash("sha256");
+            hashSum.update(buffer);
+            const actualHash = hashSum.digest("hex");
+
+            if (actualHash !== expectedHash) {
+              throw new Error(
+                `Hash mismatch for ${fileName}. Expected ${expectedHash}, got ${actualHash}`
+              );
+            }
+
+            fs.writeFileSync(destPath, buffer);
             console.log(chalk.green(`  ✔ Downloaded ${relativeDest}`));
           } catch (err: any) {
             console.error(
-              chalk.red(`  ✘ Failed to download ${file}: ${err.message}`)
+              chalk.red(`  ✘ Failed to download ${fileName}: ${err.message}`)
             );
+            process.exit(1);
           }
         }
       }

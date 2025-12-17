@@ -31,16 +31,14 @@ function getAllRuleFiles(dir: string): string[] {
       }
     } else {
       if (file.endsWith(".md")) {
-        // Optional: filter by 'rules' parent dir?
-        // For now, let's keep validating all MD files as requested, but maybe exclude REAMDME.md or specific non-rules files if needed?
-        // The user mentioned "contents of the plugin". Plugins usually have rules in .md
-        // Let's stick to all .md files for now, but ignoring node_modules is key.
         results.push(filePath);
       }
     }
   });
   return results;
 }
+
+import { IntegrityValidator } from "../validation/validators/IntegrityValidator";
 
 export async function validate(args: string[], options: { path?: string }) {
   console.log(chalk.blue("Starting Validation..."));
@@ -54,18 +52,38 @@ export async function validate(args: string[], options: { path?: string }) {
     return;
   }
 
-  const files = getAllRuleFiles(targetDir);
+  const allFiles = getAllRuleFiles(targetDir);
+
+  const files = allFiles.filter((filePath) => {
+    const relPath = path.relative(targetDir, filePath);
+    const parts = relPath.split(path.sep);
+
+    if (parts.some((p) => ["rules", "commands", "extensions"].includes(p))) {
+      return true;
+    }
+
+    const targetBasename = path.basename(targetDir);
+    if (["rules", "commands", "extensions"].includes(targetBasename)) {
+      return true;
+    }
+
+    return false;
+  });
 
   if (files.length === 0) {
     console.log(
-      chalk.yellow("No markdown files found to validate in target directory.")
+      chalk.yellow("No files found to validate in target directory.")
     );
     return;
   }
 
   console.log(chalk.cyan(`Found ${files.length} files to validate.`));
 
-  const validators = [new StructureValidator(), new ContentSafetyValidator()];
+  const validators = [
+    new StructureValidator(),
+    new ContentSafetyValidator(),
+    new IntegrityValidator(targetDir),
+  ];
   const orchestrator = new ValidationOrchestrator(validators);
 
   const contexts: ValidationContext[] = files.map((filePath) => ({
@@ -76,6 +94,7 @@ export async function validate(args: string[], options: { path?: string }) {
   const results = await orchestrator.run(contexts);
 
   let hasErrors = false;
+
   results.forEach((result, index) => {
     const filePath = files[index];
 
