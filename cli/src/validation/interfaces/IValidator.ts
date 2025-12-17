@@ -1,13 +1,6 @@
-export interface ValidationContext {
-  content: string;
-  filePath: string;
-}
+import { ValidationContext, ValidationResult } from "@domain";
 
-export interface ValidationResult {
-  valid: boolean;
-  errors: string[];
-  warnings?: string[];
-}
+export { ValidationContext, ValidationResult };
 
 export interface IValidator {
   name: string;

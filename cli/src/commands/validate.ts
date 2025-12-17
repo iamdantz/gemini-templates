@@ -1,11 +1,11 @@
 import path from "path";
 import fs from "fs";
 import chalk from "chalk";
-import { ValidationOrchestrator } from "../validation/ValidationOrchestrator";
-import { StructureValidator } from "../validation/validators/StructureValidator";
-import { ContentSafetyValidator } from "../validation/validators/ContentSafetyValidator";
-import { ValidationContext } from "../validation/interfaces/IValidator";
-import { PLUGINS_DIR } from "../config";
+import { ValidationOrchestrator } from "@validation/ValidationOrchestrator";
+import { StructureValidator } from "@validation/validators/StructureValidator";
+import { ContentSafetyValidator } from "@validation/validators/ContentSafetyValidator";
+import { ValidationContext } from "@domain";
+import { PLUGINS_DIR } from "@config";
 
 function getAllRuleFiles(dir: string): string[] {
   let results: string[] = [];
@@ -38,7 +38,7 @@ function getAllRuleFiles(dir: string): string[] {
   return results;
 }
 
-import { IntegrityValidator } from "../validation/validators/IntegrityValidator";
+import { IntegrityValidator } from "@validation/validators/IntegrityValidator";
 
 export async function validate(args: string[], options: { path?: string }) {
   console.log(chalk.blue("Starting Validation..."));
@@ -103,14 +103,16 @@ export async function validate(args: string[], options: { path?: string }) {
       console.error(
         chalk.red(`\n[FAIL] ${path.relative(process.cwd(), filePath)}`)
       );
-      result.errors.forEach((err) => console.error(chalk.red(`  - ${err}`)));
+      result.errors.forEach((err: string) =>
+        console.error(chalk.red(`  - ${err}`))
+      );
     }
 
     if (result.warnings && result.warnings.length > 0) {
       console.warn(
         chalk.yellow(`\n[WARN] ${path.relative(process.cwd(), filePath)}`)
       );
-      result.warnings.forEach((warn) =>
+      result.warnings.forEach((warn: string) =>
         console.warn(chalk.yellow(`  - ${warn}`))
       );
     }
