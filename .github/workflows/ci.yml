@@ -1,0 +1,193 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "cli/**"
+      - "plugins/**"
+      - "scripts/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "cli/**"
+      - "plugins/**"
+      - "scripts/**"
+
+jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      cli: ${{ steps.filter.outputs.cli }}
+      plugins: ${{ steps.filter.outputs.plugins }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            cli:
+              - 'cli/**'
+            plugins:
+              - 'plugins/**'
+              - 'scripts/**'
+
+  build-cli:
+    name: Build CLI
+    needs: changes
+    if: ${{ needs.changes.outputs.cli == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./cli
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: cli/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: cli-dist
+          path: cli/dist
+
+  test-cli:
+    name: Test CLI
+    needs: [changes, build-cli]
+    if: ${{ needs.changes.outputs.cli == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./cli
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: cli/package-lock.json
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: cli-dist
+          path: cli/dist
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  validate-plugins:
+    name: Validate Plugins
+    needs: [changes, build-cli]
+    if: ${{ needs.changes.outputs.plugins == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./cli
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: cli-dist
+          path: cli/dist
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Plugins
+        run: node cli/dist/index.js validate --path plugins
+
+  update-manifest:
+    name: Update Plugins Manifest
+    needs: [validate-plugins]
+    if: ${{ needs.changes.outputs.plugins == 'true' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Generate Manifest
+        run: node scripts/generate-manifest.js
+
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "chore: update plugins manifest [skip ci]"
+          file_pattern: "plugins/manifest.json"
+
+  release:
+    name: Release CLI
+    needs: [test-cli, validate-plugins]
+    if: ${{ needs.changes.outputs.cli == 'true' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./cli
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: |
+          npm install -g semantic-release \
+          @semantic-release/commit-analyzer \
+          @semantic-release/release-notes-generator \
+          @semantic-release/changelog \
+          @semantic-release/npm \
+          @semantic-release/git \
+          @semantic-release/github
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: cli-dist
+          path: cli/dist
+
+      - name: Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
